@@ -1,6 +1,9 @@
+import gleam/dict
 import gleam/int
 import gleam/io
 import gleam/list
+import gleam/option
+import gleam/result
 import gleam/string
 import simplifile
 
@@ -10,6 +13,9 @@ pub fn main() {
   let assert Ok(data) = parse(input)
 
   part1(data)
+  |> io.debug
+
+  part2(data)
   |> io.debug
 }
 
@@ -31,10 +37,20 @@ fn compute_diff(l1: List(Int), l2: List(Int), sum: Int) {
   }
 }
 
+fn part2(data: #(List(Int), List(Int))) {
+  let freq =
+    list.fold(data.1, dict.new(), fn(acc, loc) {
+      dict.upsert(acc, loc, fn(count) { option.unwrap(count, 0) + 1 })
+    })
+
+  use acc, loc <- list.fold(data.0, 0)
+  acc + loc * { dict.get(freq, loc) |> result.unwrap(0) }
+}
+
 fn parse(input) {
   input
+  |> string.trim_end
   |> string.split("\n")
-  |> list.filter(fn(x) { x != "" })
   |> list.map(fn(line) {
     let assert Ok(numbers) =
       line
