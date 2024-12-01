@@ -38,10 +38,7 @@ fn compute_diff(l1: List(Int), l2: List(Int), sum: Int) {
 }
 
 fn part2(data: #(List(Int), List(Int))) {
-  let freq =
-    list.fold(data.1, dict.new(), fn(acc, loc) {
-      dict.upsert(acc, loc, fn(count) { option.unwrap(count, 0) + 1 })
-    })
+  let freq = make_bag(data.1)
 
   use acc, loc <- list.fold(data.0, 0)
   acc + loc * { dict.get(freq, loc) |> result.unwrap(0) }
@@ -51,18 +48,19 @@ fn parse(input) {
   input
   |> string.trim_end
   |> string.split("\n")
-  |> list.map(fn(line) {
-    let assert Ok(numbers) =
+  |> list.fold(#([], []), fn(acc, line) {
+    let assert Ok([a, b]) =
       line
       |> string.split("   ")
       |> list.try_map(int.parse)
 
-    numbers
-  })
-  |> list.fold(#([], []), fn(acc, elem) {
-    let assert [a, b] = elem
-
     #([a, ..acc.0], [b, ..acc.1])
   })
   |> Ok
+}
+
+fn make_bag(input: List(a)) -> dict.Dict(a, Int) {
+  list.fold(input, dict.new(), fn(acc, loc) {
+    dict.upsert(acc, loc, fn(count) { option.unwrap(count, 0) + 1 })
+  })
 }
