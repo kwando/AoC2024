@@ -28,12 +28,10 @@ pub fn pt_2(input: List(Levels)) {
   list.count(input, tolerant_safe([], _))
 }
 
-/// generate all combinations of the suffix list with 1 element removed.
-/// the resulting list lists will be reversed but it is ok for this problem
 fn tolerant_safe(prefix: List(Int), suffix: List(Int)) -> Bool {
   case suffix {
     [skipped_level, ..rest] -> {
-      case safe(append(prefix, rest)) {
+      case safe(combine(prefix, rest)) {
         True -> True
         False -> tolerant_safe([skipped_level, ..prefix], rest)
       }
@@ -42,10 +40,10 @@ fn tolerant_safe(prefix: List(Int), suffix: List(Int)) -> Bool {
   }
 }
 
-fn append(prefix: List(Int), suffix: List(Int)) {
+fn combine(prefix: List(Int), suffix: List(Int)) {
   case suffix {
     [] -> prefix
-    [n, ..rest] -> append([n, ..prefix], rest)
+    [n, ..rest] -> combine([n, ..prefix], rest)
   }
 }
 
