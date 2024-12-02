@@ -3,9 +3,6 @@ import gleam/list
 import gleam/result
 import gleam/string
 
-type Levels =
-  List(Int)
-
 pub fn parse(input: String) -> List(Levels) {
   input
   |> string.trim_end
@@ -20,23 +17,28 @@ pub fn parse(input: String) -> List(Levels) {
   })
 }
 
+type Levels =
+  List(Int)
+
 pub fn pt_1(input: List(Levels)) {
   list.count(input, safe)
 }
 
 pub fn pt_2(input: List(Levels)) {
-  list.count(input, fn(levels) { list.any(variations([], levels, []), safe) })
+  list.count(input, tolerant_safe([], _))
 }
 
 /// generate all combinations of the suffix list with 1 element removed.
 /// the resulting list lists will be reversed but it is ok for this problem
-fn variations(prefix: List(Int), suffix: List(Int), result: List(Levels)) {
+fn tolerant_safe(prefix: List(Int), suffix: List(Int)) -> Bool {
   case suffix {
-    [h, ..r] -> {
-      let example = append(prefix, r)
-      variations([h, ..prefix], r, [example, ..result])
+    [skipped_level, ..rest] -> {
+      case safe(append(prefix, rest)) {
+        True -> True
+        False -> tolerant_safe([skipped_level, ..prefix], rest)
+      }
     }
-    [] -> result
+    [] -> False
   }
 }
 
