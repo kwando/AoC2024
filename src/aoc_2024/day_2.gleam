@@ -22,14 +22,16 @@ pub fn pt_1(input) {
 }
 
 pub fn pt_2(input) {
-  list.count(input, fn(levels) { list.any(without([], levels, []), safe) })
+  list.count(input, fn(levels) { list.any(variations([], levels, []), safe) })
 }
 
-fn without(prefix: List(Int), suffix: List(Int), result: List(List(Int))) {
+/// generate all combinations of the suffix list with 1 element removed.
+/// the resulting list lists will be reversed but it is ok for this problem
+fn variations(prefix: List(Int), suffix: List(Int), result: List(List(Int))) {
   case suffix {
     [h, ..r] -> {
       let example = append(prefix, r)
-      without([h, ..prefix], r, [example, ..result])
+      variations([h, ..prefix], r, [example, ..result])
     }
     [] -> result
   }
