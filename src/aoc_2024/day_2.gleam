@@ -1,24 +1,9 @@
 import gleam/int
-import gleam/io
 import gleam/list
 import gleam/result
 import gleam/string
-import simplifile
 
-pub fn main() {
-  let assert Ok(data) = simplifile.read("src/aoc2024/day02/input.txt")
-  let parsed_input = parse(data)
-
-  parsed_input
-  |> pt_1
-  |> io.debug
-
-  parsed_input
-  |> pt_2
-  |> io.debug
-}
-
-fn parse(input: String) {
+pub fn parse(input: String) {
   input
   |> string.trim_end
   |> string.split("\n")
@@ -32,11 +17,11 @@ fn parse(input: String) {
   })
 }
 
-fn pt_1(input) {
+pub fn pt_1(input) {
   list.count(input, safe)
 }
 
-fn pt_2(input) {
+pub fn pt_2(input) {
   list.count(input, fn(levels) { list.any(without([], levels, []), safe) })
 }
 

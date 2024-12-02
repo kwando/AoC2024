@@ -1,5 +1,5 @@
-import gleam/io
+import gladvent
 
 pub fn main() {
-  io.println("Hello from aoc2024!")
+  gladvent.run()
 }
