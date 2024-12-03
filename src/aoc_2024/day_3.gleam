@@ -9,23 +9,6 @@ pub opaque type Instruction {
   Disable
 }
 
-pub fn parse(input: String) -> List(Instruction) {
-  let assert Ok(regex) =
-    regexp.from_string("mul\\((\\d{1,3}),(\\d{1,3})\\)|do\\(\\)|don't\\(\\)")
-
-  use match <- list.map(regexp.scan(regex, input))
-  case match {
-    Match(_, [Some(a), Some(b)]) -> {
-      let assert Ok(a) = int.parse(a)
-      let assert Ok(b) = int.parse(b)
-      Multiply(a, b)
-    }
-    Match("do()", []) -> Enable
-    Match("don't()", []) -> Disable
-    _ -> panic as "invalid instruction"
-  }
-}
-
 pub fn pt_1(input: List(Instruction)) {
   use sum, instruction <- list.fold(input, 0)
   case instruction {
@@ -44,4 +27,21 @@ pub fn pt_2(input: List(Instruction)) {
       _, _ -> #(enabled, sum)
     }
   }.1
+}
+
+pub fn parse(input: String) -> List(Instruction) {
+  let assert Ok(regex) =
+    regexp.from_string("mul\\((\\d{1,3}),(\\d{1,3})\\)|do\\(\\)|don't\\(\\)")
+
+  use match <- list.map(regexp.scan(regex, input))
+  case match {
+    Match(_, [Some(a), Some(b)]) -> {
+      let assert Ok(a) = int.parse(a)
+      let assert Ok(b) = int.parse(b)
+      Multiply(a, b)
+    }
+    Match("do()", []) -> Enable
+    Match("don't()", []) -> Disable
+    _ -> panic as "invalid instruction"
+  }
 }
