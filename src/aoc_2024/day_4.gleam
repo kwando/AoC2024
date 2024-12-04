@@ -21,7 +21,6 @@ pub fn pt_1(map: Map) {
   ]
   use count, start <- list.fold(dict.keys(map), 0)
   use count, direction <- list.fold(directions, count)
-
   case get_word(map, start, direction, 4, []) {
     ["X", "M", "A", "S"] -> count + 1
     _ -> count
@@ -30,7 +29,6 @@ pub fn pt_1(map: Map) {
 
 pub fn pt_2(map: Map) {
   use count, start, _ <- dict.fold(map, 0)
-
   case
     get_word(map, start, #(1, 1), 3, []),
     get_word(map, translate(start, #(2, 0)), #(-1, 1), 3, [])
@@ -55,14 +53,14 @@ fn translate(v: Vec2, d: Vec2) -> Vec2 {
   #(v.0 + d.0, v.1 + d.1)
 }
 
-// the return value word is reversed, but it doesnt matter for this problem
-fn get_word(map, pos: Vec2, direction, length: Int, letters: List(String)) {
+// the returned word is reversed, but it doesnt matter for this problem
+fn get_word(map, pos: Vec2, dir: Vec2, length: Int, letters: List(String)) {
   case length {
     0 -> letters
     _ -> {
       case dict.get(map, pos) {
         Ok(letter) ->
-          get_word(map, translate(pos, direction), direction, length - 1, [
+          get_word(map, translate(pos, dir), dir, length - 1, [
             letter,
             ..letters
           ])
