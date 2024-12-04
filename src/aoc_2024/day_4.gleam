@@ -19,7 +19,7 @@ pub fn pt_1(map: Map) {
     #(-1, 0),
     #(-1, 1),
   ]
-  use count, start <- list.fold(dict.keys(map), 0)
+  use count, start, _ <- dict.fold(map, 0)
   use count, direction <- list.fold(directions, count)
   case get_word(map, start, direction, 4, []) {
     ["X", "M", "A", "S"] -> count + 1
