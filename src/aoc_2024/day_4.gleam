@@ -2,119 +2,72 @@ import gleam/dict
 import gleam/list
 import gleam/string
 
-pub fn pt_1(input: String) {
-  let letters =
-    input
-    |> string.trim_end
-    |> string.to_graphemes
-
-  let #(maxx, maxy, map) =
-    letters
-    |> list.fold(#(0, 0, dict.new()), fn(acc, letter) {
-      case letter {
-        "\n" -> #(0, acc.1 + 1, acc.2)
-        letter -> #(
-          acc.0 + 1,
-          acc.1,
-          dict.insert(acc.2, #(acc.0, acc.1), letter),
-        )
-      }
-    })
-
-  let maxx = maxx - 1
-
-  let start_points =
-    map
-    |> dict.to_list()
-    |> list.filter_map(fn(entry) {
-      case entry.1 {
-        "X" -> Ok(entry.0)
-        _ -> Error(Nil)
-      }
-    })
-
-  let result =
-    {
-      use start <- list.map(start_points)
-      use direction <- list.map(directions)
-      letters_in_direction(map, start, direction, 4, [])
-    }
-    |> list.flatten
-    |> list.count(fn(letters) {
-      case letters {
-        ["X", "M", "A", "S"] -> True
-        _ -> False
-      }
-    })
-}
-
-type Pos =
+type Vec2 =
   #(Int, Int)
 
-const directions = [
-  #(0, 1), #(1, 1), #(1, 0), #(1, -1), #(0, -1), #(-1, -1), #(-1, 0), #(-1, 1),
-]
+type Map =
+  dict.Dict(#(Int, Int), String)
 
-fn translate(v: Pos, d: Pos) -> Pos {
-  #(v.0 + d.0, v.1 + d.1)
-}
+pub fn pt_1(map: Map) {
+  let directions = [
+    #(0, 1),
+    #(1, 1),
+    #(1, 0),
+    #(1, -1),
+    #(0, -1),
+    #(-1, -1),
+    #(-1, 0),
+    #(-1, 1),
+  ]
+  use count, start <- list.fold(dict.keys(map), 0)
+  use count, direction <- list.fold(directions, count)
 
-fn letters_in_direction(
-  map,
-  pos: Pos,
-  direction,
-  length: Int,
-  letters: List(String),
-) {
-  case length {
-    0 -> list.reverse(letters)
-    _ -> {
-      case dict.get(map, pos) {
-        Ok(letter) ->
-          letters_in_direction(
-            map,
-            translate(pos, direction),
-            direction,
-            length - 1,
-            [letter, ..letters],
-          )
-        Error(_) -> list.reverse(letters)
-      }
-    }
+  case get_word(map, start, direction, 4, []) {
+    ["X", "M", "A", "S"] -> count + 1
+    _ -> count
   }
 }
 
-pub fn pt_2(input: String) {
-  let letters =
-    input
-    |> string.trim_end
-    |> string.to_graphemes
+pub fn pt_2(map: Map) {
+  use count, start, _ <- dict.fold(map, 0)
 
-  let #(maxx, maxy, map) =
-    letters
-    |> list.fold(#(0, 0, dict.new()), fn(acc, letter) {
-      case letter {
-        "\n" -> #(0, acc.1 + 1, acc.2)
-        letter -> #(
-          acc.0 + 1,
-          acc.1,
-          dict.insert(acc.2, #(acc.0, acc.1), letter),
-        )
-      }
-    })
-
-  use #(start, _) <- list.count(dict.to_list(map))
-
-  is_mas(letters_in_direction(map, start, #(1, 1), 3, []))
-  && is_mas(
-    letters_in_direction(map, translate(start, #(2, 0)), #(-1, 1), 3, []),
-  )
+  case
+    get_word(map, start, #(1, 1), 3, []),
+    get_word(map, translate(start, #(2, 0)), #(-1, 1), 3, [])
+  {
+    ["M", "A", "S"], ["M", "A", "S"]
+    | ["S", "A", "M"], ["M", "A", "S"]
+    | ["M", "A", "S"], ["S", "A", "M"]
+    | ["S", "A", "M"], ["S", "A", "M"]
+    -> count + 1
+    _, _ -> count
+  }
 }
 
-fn is_mas(letters) {
-  case letters {
-    ["M", "A", "S"] -> True
-    ["S", "A", "M"] -> True
-    _ -> False
+pub fn parse(input: String) -> Map {
+  let map = dict.new()
+  use map, row, y <- list.index_fold(string.split(input, "\n"), map)
+  use map, letter, x <- list.index_fold(string.split(row, ""), map)
+  dict.insert(map, #(x, y), letter)
+}
+
+fn translate(v: Vec2, d: Vec2) -> Vec2 {
+  #(v.0 + d.0, v.1 + d.1)
+}
+
+// the return value word is reversed, but it doesnt matter for this problem
+fn get_word(map, pos: Vec2, direction, length: Int, letters: List(String)) {
+  case length {
+    0 -> letters
+    _ -> {
+      case dict.get(map, pos) {
+        Ok(letter) ->
+          get_word(map, translate(pos, direction), direction, length - 1, [
+            letter,
+            ..letters
+          ])
+        Error(_) -> letters
+      }
+    }
   }
 }
