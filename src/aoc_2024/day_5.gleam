@@ -36,7 +36,15 @@ fn is_valid(update, rules) {
 }
 
 fn middle(update) {
-  update |> list.drop(list.length(update) / 2) |> list.first
+  find_middle(update, update)
+}
+
+fn find_middle(fast: List(a), slow: List(a)) -> Result(a, Nil) {
+  case fast, slow {
+    _, [] -> Error(Nil)
+    [_, _, ..fast], [_, ..slow] -> find_middle(fast, slow)
+    [_], [middle, ..] | [], [middle, ..] -> Ok(middle)
+  }
 }
 
 fn sort_update(update, rules) {
