@@ -25,10 +25,8 @@ pub fn pt_2(input: ParseResult) {
     |> walk_map(start_pos, #(0, -1))
     |> set.delete(start_pos)
 
-  let map_with_obstacle_at = fn(pos: Vec2) { dict.insert(map, pos, "#") }
-
   set.fold(possible_positions, 0, fn(number_of_loops, pos) {
-    case map_with_obstacle_at(pos) |> detect_loop(start_pos, #(0, -1)) {
+    case dict.insert(map, pos, "#") |> detect_loop(start_pos, #(0, -1)) {
       True -> number_of_loops + 1
       False -> number_of_loops
     }
