@@ -28,14 +28,6 @@ pub fn pt_2(input: List(Equation)) {
   }
 }
 
-fn number_of_digits(n: Int) {
-  case n {
-    n if n < 0 -> number_of_digits(-n)
-    n if n < 10 -> 10
-    n -> number_of_digits(n / 10) * 10
-  }
-}
-
 fn try_solve(equation: Equation, ops: List(Operation)) {
   try_solve_loop(equation.terms, ops, equation.target)
 }
@@ -64,6 +56,14 @@ fn apply(op: Operation, a: Int, b: Int) {
 
 fn concat_numbers(a: Int, b: Int) {
   number_of_digits(b) * a + b
+}
+
+fn number_of_digits(n: Int) {
+  case n {
+    n if n < 0 -> number_of_digits(-n)
+    n if n < 10 -> 10
+    n -> number_of_digits(n / 10) * 10
+  }
 }
 
 pub fn parse(input: String) -> List(Equation) {
