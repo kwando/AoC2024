@@ -12,7 +12,7 @@ pub type Block {
 }
 
 pub fn pt_1(blocks: List(Block)) {
-  defragment_blocks(deque.from_list(blocks), [])
+  defragment_blocks(blocks)
   |> checksum
 }
 
@@ -28,45 +28,42 @@ fn checksum(blocks: List(Block)) {
 fn checksum_loop(blocks: List(Block), index: Int, sum: Int) {
   case blocks {
     [] -> sum
-    [File(size: 0, ..), ..rest] | [Free(0), ..rest] ->
-      checksum_loop(rest, index, sum)
+    [File(size: 0, ..), ..rest] -> checksum_loop(rest, index, sum)
     [File(id:, size:), ..rest] ->
       checksum_loop([File(id, size - 1), ..rest], index + 1, sum + index * id)
-    [Free(x), ..rest] -> checksum_loop([Free(x - 1), ..rest], index + 1, sum)
+    [Free(x), ..rest] -> checksum_loop(rest, index + x, sum)
   }
 }
 
-pub fn debug_blocks(blocks: List(Block)) -> List(Block) {
-  list.fold(blocks, "", fn(str, block) {
-    case block {
-      Free(size) -> str <> string.repeat(".", size)
-      File(id, size) -> str <> string.repeat(int.to_string(id), size)
-    }
-  })
-  |> io.println
-
-  blocks
+fn defragment_blocks(blocks: List(Block)) {
+  defragment_blocks_loop(deque.from_list(blocks), [])
 }
 
-fn defragment_blocks(disk: Deque(Block), result: List(Block)) {
+fn defragment_blocks_loop(disk: Deque(Block), result: List(Block)) {
   case result {
     [File(..), ..] | [] -> {
       case deque.pop_front(disk) {
-        Ok(#(item, remaining)) -> defragment_blocks(remaining, [item, ..result])
+        Ok(#(item, remaining)) ->
+          defragment_blocks_loop(remaining, [item, ..result])
         Error(_) -> list.reverse(result)
       }
     }
     [Free(free), ..rest] -> {
       case deque.pop_back(disk) {
+        // when the queue empty we are done
         Error(_) -> list.reverse(rest)
-        Ok(#(Free(_), remaining)) -> defragment_blocks(remaining, result)
+        Ok(#(Free(_), remaining)) -> defragment_blocks_loop(remaining, result)
         Ok(#(File(size:, ..) as file, remaining)) -> {
           case int.compare(size, free) {
             order.Lt ->
-              defragment_blocks(remaining, [Free(free - size), file, ..rest])
-            order.Eq -> defragment_blocks(remaining, [file, ..rest])
+              defragment_blocks_loop(remaining, [
+                Free(free - size),
+                file,
+                ..rest
+              ])
+            order.Eq -> defragment_blocks_loop(remaining, [file, ..rest])
             order.Gt -> {
-              defragment_blocks(
+              defragment_blocks_loop(
                 remaining |> deque.push_back(File(..file, size: size - free)),
                 [File(..file, size: free), ..rest],
               )
@@ -107,32 +104,23 @@ fn insert_file(disk, file, before) {
     }
 
     File(size:, ..) as f, [Free(free), ..rest] -> {
-      list.reverse([
-        f,
-        ..{
-          before
-          |> list.map(fn(x) {
-            case x == f {
-              True -> Free(size)
-              False -> x
-            }
-          })
-        }
-      ])
-      |> list.append([
-        Free(free - size),
-        ..{
-          rest
-          |> list.map(fn(x) {
-            case x == f {
-              True -> Free(size)
-              False -> x
-            }
-          })
-        }
-      ])
+      list.reverse([f, ..before])
+      |> list.append([Free(free - size), ..clear_file(rest, f)])
     }
     File(_, _), [] -> list.reverse(before)
+  }
+}
+
+fn clear_file(blocks: List(Block), block: Block) {
+  case block {
+    Free(..) -> blocks
+    File(size:, ..) as file -> {
+      use b <- list.map(blocks)
+      case file == b {
+        True -> Free(size)
+        False -> b
+      }
+    }
   }
 }
 
@@ -159,4 +147,14 @@ pub fn parse(input: String) -> List(Block) {
   })
   |> pair.first
   |> list.reverse
+}
+
+// helper function for debugg output
+pub fn blocks_to_string(blocks: List(Block)) -> String {
+  list.fold(blocks, "", fn(str, block) {
+    case block {
+      Free(size) -> str <> string.repeat(".", size)
+      File(id, size) -> str <> string.repeat(int.to_string(id), size)
+    }
+  })
 }
