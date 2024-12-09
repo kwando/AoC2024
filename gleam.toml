@@ -17,6 +17,7 @@ gleam_stdlib = ">= 0.34.0 and < 2.0.0"
 simplifile = ">= 2.2.0 and < 3.0.0"
 gladvent = ">= 2.0.2 and < 3.0.0"
 gleam_regexp = ">= 1.0.0 and < 2.0.0"
+gleam_deque = ">= 1.0.0 and < 2.0.0"
 
 [dev-dependencies]
 gleeunit = ">= 1.0.0 and < 2.0.0"
@@ -39,3 +40,6 @@ pt_2 = 124060392153684
 [gladvent.2024.8]
 pt_1 = 280
 pt_2 = 958
+[gladvent.2024.9]
+pt_1 = 6154342787400
+pt_2 = 6183632723350
