@@ -1,6 +1,5 @@
 import gleam/deque.{type Deque}
 import gleam/int
-import gleam/io
 import gleam/list
 import gleam/order
 import gleam/pair
@@ -121,14 +120,6 @@ fn clear_file(blocks: List(Block), block: Block) {
         False -> b
       }
     }
-  }
-}
-
-fn pairs(input, result) {
-  case input {
-    [a, b, ..rest] -> pairs(rest, [#(a, b)])
-    [] -> Ok(list.reverse(result))
-    _ -> Error(Nil)
   }
 }
 
