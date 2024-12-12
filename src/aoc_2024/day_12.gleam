@@ -23,8 +23,8 @@ pub fn pt_2(input: dict.Dict(Vec2, String)) {
 const directions = [#(0, 1), #(1, 0), #(-1, 0), #(0, -1)]
 
 fn get_sides(region: set.Set(Vec2)) {
-  use acc, position <- set.fold(region, 0)
-  use acc, direction <- list.fold(directions, acc)
+  use corners, position <- set.fold(region, 0)
+  use corners, direction <- list.fold(directions, corners)
   case
     // outside corner
     !set.contains(region, translate(position, direction))
@@ -37,8 +37,8 @@ fn get_sides(region: set.Set(Vec2)) {
       translate(position, translate(direction, rotate90(direction))),
     )
   {
-    True -> acc + 1
-    False -> acc
+    True -> corners + 1
+    False -> corners
   }
 }
 
