@@ -1,8 +1,6 @@
 import aoc/vec2.{type Vec2, rotate90, translate}
 import gleam/dict
-import gleam/int
 import gleam/list
-import gleam/option
 import gleam/set
 import gleam/string
 
