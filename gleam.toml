@@ -19,6 +19,7 @@ gladvent = ">= 2.0.2 and < 3.0.0"
 gleam_regexp = ">= 1.0.0 and < 2.0.0"
 gleam_deque = ">= 1.0.0 and < 2.0.0"
 pocket_watch = ">= 1.0.0 and < 2.0.0"
+gleamy_structures = ">= 1.1.0 and < 2.0.0"
 
 [dev-dependencies]
 gleeunit = ">= 1.0.0 and < 2.0.0"
@@ -62,3 +63,6 @@ pt_2 = 6752
 [gladvent.2024.15]
 pt_1 = 1511865
 pt_2 = 1519991
+[gladvent.2024.16]
+pt_1 = 94436
+pt_2 = 481
