@@ -20,6 +20,7 @@ gleam_regexp = ">= 1.0.0 and < 2.0.0"
 gleam_deque = ">= 1.0.0 and < 2.0.0"
 pocket_watch = ">= 1.0.0 and < 2.0.0"
 gleamy_structures = ">= 1.1.0 and < 2.0.0"
+gary = ">= 1.1.0 and < 2.0.0"
 
 [dev-dependencies]
 gleeunit = ">= 1.0.0 and < 2.0.0"
@@ -66,3 +67,9 @@ pt_2 = 1519991
 [gladvent.2024.16]
 pt_1 = 94436
 pt_2 = 481
+[gladvent.2024.17]
+pt_1 = "1,7,6,5,1,0,5,0,7"
+pt_2 = 236555995274861
+[gladvent.2024.18]
+pt_2 = "46,28"
+pt_1 = 308
